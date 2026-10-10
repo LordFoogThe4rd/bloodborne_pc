@@ -10,6 +10,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - uses: msys2/setup-msys2@v2
         with:
           msystem: CLANG64
@@ -42,3 +45,11 @@ jobs:
             mingw-w64-clang-x86_64-nlohmann-json
       - name: Build
         run: bash build.sh
+      - name: Package
+        run: |
+          export WINPYTHON="$(cygpath "$pythonLocation")/python.exe"
+          bash packaging/windows/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bbport-windows
+          path: dist/bbport-windows.zip
