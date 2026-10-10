@@ -10,3 +10,5 @@ patches here to its working tree when they are not applied yet:
 - `0003-...`: MinGW compat in the vendored FidelityFX sources: `<stdlib.h>` for `_countof`
   (MSVC provides it transitively) and `swprintf` for `swprintf_s` (undeclared under
   MinGW clang).
+- `0004-...`: `#include <new>` (placement new) and `<cmath>` (`log2`) in `ffx_vk.cpp`;
+  same libc++/MinGW transitive-include gap as `0002`.
