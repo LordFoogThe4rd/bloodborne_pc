@@ -1,0 +1,126 @@
+From: bbport
+Subject: [PATCH] MinGW compat: stdlib.h for _countof, swprintf for swprintf_s
+
+---
+diff --git a/upstream/ffx-1.1.4/sdk/src/components/frameinterpolation/ffx_frameinterpolation.cpp b/upstream/ffx-1.1.4/sdk/src/components/frameinterpolation/ffx_frameinterpolation.cpp
+index b8f48c0..fb4acbb 100644
+--- a/upstream/ffx-1.1.4/sdk/src/components/frameinterpolation/ffx_frameinterpolation.cpp
++++ b/upstream/ffx-1.1.4/sdk/src/components/frameinterpolation/ffx_frameinterpolation.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string>       // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include <FidelityFX/host/ffx_frameinterpolation.h>
+ 
+ #define FFX_CPU
+diff --git a/upstream/ffx-1.1.4/sdk/src/components/fsr3upscaler/ffx_fsr3upscaler.cpp b/upstream/ffx-1.1.4/sdk/src/components/fsr3upscaler/ffx_fsr3upscaler.cpp
+index 94bf581..86fdcae 100644
+--- a/upstream/ffx-1.1.4/sdk/src/components/fsr3upscaler/ffx_fsr3upscaler.cpp
++++ b/upstream/ffx-1.1.4/sdk/src/components/fsr3upscaler/ffx_fsr3upscaler.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string.h>     // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include <FidelityFX/host/ffx_fsr3upscaler.h>
+ 
+ #define FFX_CPU
+diff --git a/upstream/ffx-1.1.4/sdk/src/components/opticalflow/ffx_opticalflow.cpp b/upstream/ffx-1.1.4/sdk/src/components/opticalflow/ffx_opticalflow.cpp
+index ae94c2d..96b5362 100644
+--- a/upstream/ffx-1.1.4/sdk/src/components/opticalflow/ffx_opticalflow.cpp
++++ b/upstream/ffx-1.1.4/sdk/src/components/opticalflow/ffx_opticalflow.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string>       // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include "FidelityFX/host/ffx_opticalflow.h"
+ 
+ #ifdef __clang__
+diff --git a/upstream/ffx-1.1.4/sdk/src/shared/ffx_message.cpp b/upstream/ffx-1.1.4/sdk/src/shared/ffx_message.cpp
+index e325a05..03e3545 100644
+--- a/upstream/ffx-1.1.4/sdk/src/shared/ffx_message.cpp
++++ b/upstream/ffx-1.1.4/sdk/src/shared/ffx_message.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include <FidelityFX/host/ffx_message.h>
+ #include <FidelityFX/host/ffx_util.h>
++#include <wchar.h>  // bbport: swprintf declaration on MinGW
+ 
+ #ifdef _WIN32
+ #ifndef WIN32_LEAN_AND_MEAN
+@@ -48,10 +49,10 @@ void ffxPrintMessage(uint32_t type, const wchar_t* message)
+         // Format the message string
+         wchar_t buffer[512];
+         if (type == FFX_MESSAGE_TYPE_ERROR) {
+-            swprintf_s(buffer, 512, L"FSR_API_DEBUG_ERROR: %ls\n", message);
++            swprintf(buffer, 512, L"FSR_API_DEBUG_ERROR: %ls\n", message);
+         }
+         else if (type == FFX_MESSAGE_TYPE_WARNING) {
+-            swprintf_s(buffer, 512, L"FSR_API_DEBUG_WARNING: %ls\n", message);
++            swprintf(buffer, 512, L"FSR_API_DEBUG_WARNING: %ls\n", message);
+         }
+         OutputDebugStringW(buffer);
+     } else {
+diff --git a/upstream/ffx-2.3.0/Kits/FidelityFX/api/internal/ffx_message.cpp b/upstream/ffx-2.3.0/Kits/FidelityFX/api/internal/ffx_message.cpp
+index 4a930fe..86c4d96 100644
+--- a/upstream/ffx-2.3.0/Kits/FidelityFX/api/internal/ffx_message.cpp
++++ b/upstream/ffx-2.3.0/Kits/FidelityFX/api/internal/ffx_message.cpp
+@@ -22,6 +22,7 @@
+ 
+ #include "ffx_message.h"
+ #include "ffx_util.h"
++#include <wchar.h>  // bbport: swprintf declaration on MinGW
+ 
+ #if defined(_WINDOWS)
+     #ifndef WIN32_LEAN_AND_MEAN
+@@ -59,10 +60,10 @@ void ffxPrintMessage(uint32_t type, const wchar_t* message)
+             // Format the message string
+             wchar_t buffer[512];
+             if (type == FFX_API_MESSAGE_TYPE_ERROR) {
+-                swprintf_s(buffer, 512, L"FSR_API_DEBUG_ERROR: %ls\n", message);
++                swprintf(buffer, 512, L"FSR_API_DEBUG_ERROR: %ls\n", message);
+             }
+             else if (type == FFX_API_MESSAGE_TYPE_WARNING) {
+-                swprintf_s(buffer, 512, L"FSR_API_DEBUG_WARNING: %ls\n", message);
++                swprintf(buffer, 512, L"FSR_API_DEBUG_WARNING: %ls\n", message);
+             }
+             OutputDebugStringW(buffer);
+         } 
+diff --git a/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_frameinterpolation.cpp b/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_frameinterpolation.cpp
+index 5ad51f6..eacf89f 100644
+--- a/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_frameinterpolation.cpp
++++ b/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_frameinterpolation.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string>       // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include "../include/ffx_frameinterpolation.h"
+ 
+ #define FFX_CPU
+diff --git a/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_opticalflow.cpp b/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_opticalflow.cpp
+index ce00929..6fde2f8 100644
+--- a/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_opticalflow.cpp
++++ b/upstream/ffx-2.3.0/Kits/FidelityFX/framegeneration/fsr3/internal/ffx_opticalflow.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string>       // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include "../include/ffx_opticalflow.h"
+ 
+ #ifdef __clang__
+diff --git a/upstream/ffx-2.3.0/Kits/FidelityFX/upscalers/fsr3/internal/ffx_fsr3upscaler.cpp b/upstream/ffx-2.3.0/Kits/FidelityFX/upscalers/fsr3/internal/ffx_fsr3upscaler.cpp
+index aa6d753..2373329 100644
+--- a/upstream/ffx-2.3.0/Kits/FidelityFX/upscalers/fsr3/internal/ffx_fsr3upscaler.cpp
++++ b/upstream/ffx-2.3.0/Kits/FidelityFX/upscalers/fsr3/internal/ffx_fsr3upscaler.cpp
+@@ -24,6 +24,7 @@
+ #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
+ #include <string.h>     // for memset
+ #include <cfloat>       // for FLT_EPSILON
++#include <stdlib.h>     // bbport: _countof on MinGW
+ #include "../include/ffx_fsr3upscaler.h"
+ 
+ #include "../../../api/internal/ffx_backends.h"

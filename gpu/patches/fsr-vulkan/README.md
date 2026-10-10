@@ -7,3 +7,6 @@ patches here to its working tree when they are not applied yet:
   statistics of each pass) in the FSR 4 v07 provider.
 - `0002-...`: `#include <mutex>` in the FFX Vulkan backend; libc++ (the Windows MSYS2 CLANG64
   build) does not include it transitively.
+- `0003-...`: MinGW compat in the vendored FidelityFX sources: `<stdlib.h>` for `_countof`
+  (MSVC provides it transitively) and `swprintf` for `swprintf_s` (undeclared under
+  MinGW clang).
