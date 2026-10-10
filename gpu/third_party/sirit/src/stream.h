@@ -10,6 +10,7 @@
 #include <span>
 #include <cassert>
 #include <concepts>
+#include <cstdlib> // std::abort
 #include <cstddef>
 #include <functional>
 #include <string_view>
