@@ -53,3 +53,8 @@ jobs:
         with:
           name: bbport-windows
           path: dist/bbport-windows.zip
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-logs
+          path: out/gpu-build.log
