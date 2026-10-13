@@ -28,13 +28,15 @@ def child(folder, name):
 def content_root(folder):
     """(root, prefix): where a mod's files are and the game path they go to, or None.
 
-    Accepted layouts: <mod>/dvdroot_ps4, <mod>/app0/dvdroot_ps4, <mod>/CUSA03173/dvdroot_ps4,
+    Accepted layouts: <mod>/dvdroot_ps4, <mod>/app0/dvdroot_ps4, <mod>/<serial>/dvdroot_ps4,
     one wrapper folder around any of these (an archive extracted into a folder of its name), and
     the game's folders without dvdroot_ps4 (<mod>/chr, <mod>/parts, ...)."""
     folder = Path(folder)
     if not folder.is_dir():
         return None
-    for wrapper in ('', 'app0', 'CUSA03173'):
+    # Every retail release (patches.BLOODBORNE_IDS).
+    for wrapper in ('', 'app0', 'CUSA03173', 'CUSA00900', 'CUSA00207', 'CUSA00208', 'CUSA00299',
+                    'CUSA01363', 'CUSA03179', 'CUSA03014', 'CUSA03023'):
         base = child(folder, wrapper) if wrapper else folder
         dvdroot = child(base, 'dvdroot_ps4')
         if dvdroot.is_dir():
@@ -62,7 +64,7 @@ def selected(root, config):
     available = discover(root)
     if not config or not Path(config).is_file():
         return available
-    settings = json.loads(Path(config).read_text())
+    settings = json.loads(Path(config).read_text(encoding='utf-8'))
     disabled_names = settings.get('disabled', [])
     if not isinstance(disabled_names, list) or not all(isinstance(n, str) for n in disabled_names):
         raise ValueError('Disabled mods must be a list of folder names')
