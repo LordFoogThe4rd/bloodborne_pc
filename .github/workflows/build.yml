@@ -16,10 +16,10 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: CLANG64
-          update: true
           install: >-
             git patch
             mingw-w64-clang-x86_64-toolchain
+            mingw-w64-clang-x86_64-sccache
             mingw-w64-clang-x86_64-cmake
             mingw-w64-clang-x86_64-ninja
             mingw-w64-clang-x86_64-pkgconf
@@ -44,7 +44,12 @@ jobs:
             mingw-w64-clang-x86_64-miniupnpc
             mingw-w64-clang-x86_64-nlohmann-json
       - name: Build
+        env:
+          SCCACHE_GHA_ENABLED: "true"
         run: bash build.sh
+      - name: Stop sccache
+        if: always()
+        run: sccache --stop-server || true
       - name: Package
         run: |
           export WINPYTHON="$(cygpath "$pythonLocation")/python.exe"
