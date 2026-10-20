@@ -10,5 +10,10 @@ patches here to its working tree when they are not applied yet:
 - `0003-...`: MinGW compat in the vendored FidelityFX sources: `<stdlib.h>` for `_countof`
   (MSVC provides it transitively) and `swprintf` for `swprintf_s` (undeclared under
   MinGW clang).
+- `0003-...` (frame generation): FSR 3.1 frame generation tells the bridge which frame its
+  jobs belong to and retires that frame with the imported views. Without it every constant
+  buffer and descriptor set the bridge made (one allocation each, per generated frame) was
+  kept until the context was destroyed: video memory grew by about 60 MiB a second until
+  the device was lost.
 - `0004-...`: `#include <new>` (placement new) and `<cmath>` (`log2`) in `ffx_vk.cpp`;
   same libc++/MinGW transitive-include gap as `0002`.
