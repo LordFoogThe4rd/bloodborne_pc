@@ -43,9 +43,15 @@ jobs:
             mingw-w64-clang-x86_64-zlib
             mingw-w64-clang-x86_64-miniupnpc
             mingw-w64-clang-x86_64-nlohmann-json
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/sccache
+          key: sccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: sccache-${{ runner.os }}-
       - name: Build
         env:
-          SCCACHE_GHA_ENABLED: "true"
+          # Local disk cache: sccache's GitHub backend needs cache vars the runner no longer sets.
+          SCCACHE_DIR: ${{ runner.temp }}/sccache
         run: bash build.sh
       - name: Stop sccache
         if: always()
